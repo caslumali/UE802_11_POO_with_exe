@@ -24,7 +24,7 @@ GeoJSON_Parcel_Processing
 ## Graphical User Interface
 The program features a GUI for ease of use. Below is a preview of the interface:
 
-![GUI Screenshot](path/to/your/screenshot.png)
+![GUI Screenshot](https://github.com/caslumali/UE802_11_POO_with_exe/blob/main/docs/print_gui.png)
 
 ### Key Features of the GUI
 - File and directory selection dialogs
