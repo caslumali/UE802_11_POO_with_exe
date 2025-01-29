@@ -1,0 +1,25 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*.so
+
+# Logs and databases
+*.log
+outputs/
+logs/
+
+# Virtual environment
+venv/
+.env
+
+# Build artifacts
+build/
+dist/
+*.spec
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Specifiques files
+README_v1.md
