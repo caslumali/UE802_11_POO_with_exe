@@ -1,8 +1,35 @@
-'''
-Import necessary modules for file operations, command-line arguments,
-configuration management, CSV and GeoJSON processing, logging,
-system-specific operations, and utility functions.
-'''
+"""
+This module is designed to automate the process of validating,
+correcting, and integrating CSV and GeoJSON data for geographical information systems.
+It leverages configuration settings, either specified via a configuration file or command-line arguments,
+to guide the processing of CSV and GeoJSON files. 
+
+Dependencies:
+    - os: For interacting with the operating system, especially for file and directory operations.
+    - config_manager: Manages application configuration, loading settings from files or command-line arguments.
+    - csv_handler: Provides functionalities for processing CSV files, including validation and formatting.
+    - geojson_handler: Handles the processing of GeoJSON files, integrating CSV data based on configuration.
+    - logging: Used for logging information, warnings, and errors throughout the processing workflow.
+    - sys: Enables interaction with the Python interpreter, particularly for exiting the program with status codes.
+    - utils: Contains utility functions, such as validating the CSV file separator.
+
+Workflow Overview:
+    1. Configuration is loaded from a file or command-line arguments, establishing the parameters for processing.
+    2. The existence of the output directory is verified, and it is created if it does not exist.
+    3. The CSV file separator is validated against the expected format. 
+    If a mismatch is detected, the user is prompted to provide the correct separator.
+    4. The CSV file is processed to match the expected format, and results are outputted to specified paths.
+    5. Processed CSV data is read and used to update a GeoJSON file according to the configurations specified.
+    6. Errors and exceptions encountered during processing are logged,
+    and the program exits with a non-zero status if critical issues occur.
+
+Exception Handling:
+The module employs exception handling to ensure that any errors encountered during the configuration loading,
+CSV processing, or GeoJSON processing are logged. 
+This approach facilitates troubleshooting by providing detailed
+error messages and exits the program with an appropriate status code to indicate failure.
+"""
+
 import os
 import config_manager
 import csv_handler
@@ -92,7 +119,5 @@ def main():
         sys.exit(1)
 
     # Optionally, insert additional logging or operations here
-
-
 if __name__ == '__main__':
     main()

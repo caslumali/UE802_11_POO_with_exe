@@ -1,4 +1,10 @@
-# Import the logging module for logging error messages.
+"""
+Module for validating CSV file separators.
+
+This module provides a function to check if a given CSV file uses the expected separator character.
+It imports the logging module for error logging.
+"""
+
 import logging
 
 

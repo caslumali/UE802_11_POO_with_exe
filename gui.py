@@ -1,30 +1,63 @@
-'''
-Import necessary libraries and modules for GUI creation and interaction (tkinter),
-file dialogs and messages (ttk, filedialog, simpledialog messagebox),
-configuration management (config_manager), CSV file processing (csv_handler),
-GeoJSON file processing (geojson_handler), operating system dependent functionality (os),
-and CSV file operations (csv).
-'''
+"""
+This module creates a graphical user interface (GUI) application
+for processing and managing parcel data from CSV and GeoJSON files. 
+It integrates functionalities for file selection, CSV validation, and GeoJSON processing.
+
+Dependencies:
+    - tkinter: Used for creating the GUI components.
+    - ttk, filedialog, simpledialog, messagebox: Tkinter modules for themed widgets,
+    file selection dialogs, simple input dialogs, and message boxes, respectively.
+    - config_manager: Manages application configuration settings.
+    - csv_handler: Handles CSV file processing.
+    - geojson_handler: Manages GeoJSON file processing.
+    - os, csv: Standard Python modules for operating system interactions and CSV file operations.
+    - logging: Provides logging functionalities.
+
+Main Components:
+    - TextHandler: A custom logging handler that directs logging output to a Tkinter Text widget
+    - configure_logging: Configures the application's logging to output to the specified Tkinter Text widget.
+    - browse_file, browse_folder: Functions to open file and folder dialog windows, 
+    allowing the user to select files or directories and display their paths in the GUI.
+    - validate_csv_separator, confirm_column_name: Validate the CSV file's structure, 
+    including the separator and column names, ensuring compatibility with processing expectations.
+    - submit(): The main function that handles the submission from the GUI,
+    validating inputs and initiating the processing of selected files.
+
+Usage:
+The module is designed to be run as a standalone application. 
+Upon execution, it presents a user-friendly interface that guides the user through the process of selecting input CSV and GeoJSON files
+specifying processing options, and choosing an output directory for the processed files. 
+The GUI also provides real-time feedback through a dedicated logging area.
+
+Features:
+    - Interactive file and directory selection.
+    - Real-time logging within the GUI.
+    - Input validation and error handling.
+    - Configuration management through external modules.
+    - Processing of CSV and GeoJSON files with customizable options.
+"""
+import config_manager
+import csv
+import csv_handler
+import geojson_handler
+import logging
+import os
 import tkinter as tk
 from tkinter import ttk, filedialog, simpledialog, messagebox
-import config_manager
-import csv_handler
-import logging
-import geojson_handler
-import os
-import csv
+
 
 class TextHandler(logging.Handler):
     """
     A custom logging handler that directs logging output to a Tkinter Text widget.
-    
+
     Attributes:
         text_widget (tk.Text): The Tkinter Text widget to which log messages are directed.
     """
+
     def __init__(self, text_widget: tk.Text):
         """
         Initialize the handler with the Tkinter Text widget.
-        
+
         Args:
             text_widget (tk.Text): A Tkinter Text widget instance.
         """
@@ -34,33 +67,37 @@ class TextHandler(logging.Handler):
     def emit(self, record: logging.LogRecord):
         """
         Override the emit function to log a record to the text widget.
-        
+
         Args:
             record (logging.LogRecord): Log record, which is a LogRecord object.
         """
         msg = self.format(record)  # Format the log message
         # Safely make changes to the text widget
         self.text_widget.configure(state='normal')
-        self.text_widget.insert(tk.END, msg + '\n')  # Append the message to the widget
-        self.text_widget.configure(state='disabled')  # Disable editing of the widget
+        # Append the message to the widget
+        self.text_widget.insert(tk.END, msg + '\n')
+        # Disable editing of the widget
+        self.text_widget.configure(state='disabled')
         self.text_widget.yview(tk.END)  # Auto-scroll to the end of the widget
-        
+
+
 def configure_logging(log_text: tk.Text):
     """
     Configures logging to direct messages to a Tkinter Text widget.
-    
+
     Args:
         log_text (tk.Text): A Tkinter Text widget where logs will be displayed.
     """
     # Create a text handler which directs logs to the text widget
     text_handler = TextHandler(log_text)
     # Set a formatter for the handler
-    text_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
+    text_handler.setFormatter(logging.Formatter(
+        '%(asctime)s - %(levelname)s - %(message)s'))
     # Set the logging level and add the handler to the root logger
     root_logger = logging.getLogger()
     root_logger.setLevel(logging.INFO)
     root_logger.addHandler(text_handler)
-    
+
 
 def browse_file(entry: str, file_type: str) -> str:
     """Opens a dialog for the user to select a file and inserts the path into the associated entry field."""
@@ -74,12 +111,14 @@ def browse_file(entry: str, file_type: str) -> str:
         entry.delete(0, tk.END)
         entry.insert(0, filename)
 
+
 def browse_folder(entry: str) -> str:
     """Opens a dialog for the user to select a directory and inserts the path into the associated entry field."""
     foldername = filedialog.askdirectory()
     if foldername:  # Check if a directory was selected
         entry.delete(0, tk.END)
         entry.insert(0, foldername)
+
 
 def validate_csv_separator(csv_file: str, separator: str, expected_column: int) -> bool:
     """
@@ -136,6 +175,20 @@ def submit():
     inconsistencies_json_path = os.path.join(
         output_dir, 'inconsistencies_json.csv')
     output_geojson_path = os.path.join(output_dir, 'proprietaires.geojson')
+
+    cfg_manager = config_manager.ConfigManager()
+
+    # Atualiza as configurações diretamente
+    cfg_manager.config['Paths']['InputCSV'] = csv_file
+    cfg_manager.config['Paths']['InputGeoJSON'] = json_file
+    cfg_manager.config['Paths']['OutputGeoJSON'] = output_geojson_path
+    cfg_manager.config['Paths']['InconsistenciesCSV'] = inconsistencies_csv_path
+    cfg_manager.config['Options']['IdCSVColumn'] = csv_id_column
+    # Exemplo fixo, ajuste conforme necessário
+    cfg_manager.config['Options']['PropName'] = 'Propriétaires'
+    # Exemplo fixo, ajuste conforme necessário
+    cfg_manager.config['Options']['IndividualPropName'] = 'Propriétaire'
+    cfg_manager.config['Options']['CSVSeparator'] = csv_separator
 
     # Check if JSON and CSV files are selected
     if not os.path.exists(json_file) or not os.path.exists(csv_file):
@@ -199,11 +252,6 @@ def submit():
                 messagebox.showinfo("Processus Annulé",
                                     "Le processus a été annulé par l'utilisateur.")
                 return
-
-        # Update configuration with the GUI inputs
-        cfg_manager = config_manager.ConfigManager()
-        cfg_manager.update_config(csv_file, json_file, output_geojson_path, inconsistencies_csv_path,
-                                  csv_id_column, 'Propriétaires', 'Propriétaire', csv_separator)
 
         # Process the files with the provided paths
         try:
@@ -321,37 +369,38 @@ main_frame.columnconfigure(1, weight=1)
 root.columnconfigure(0, weight=1)
 root.rowconfigure(0, weight=1)
 
+
 def clear_logs(log_text: tk.Text):
     """
     Clears the content of the logging area in the Tkinter Text widget.
-    
+
     Args:
         log_text (tk.Text): A Tkinter Text widget from which logs will be cleared.
     """
-    log_text.configure(state='normal')  # Temporarily make the text widget editable
-    log_text.delete('1.0', tk.END)      # Clear all the contents of the text widget
+    log_text.configure(
+        state='normal')  # Temporarily make the text widget editable
+    # Clear all the contents of the text widget
+    log_text.delete('1.0', tk.END)
     log_text.configure(state='disabled')  # Disable editing of the widget again
+
 
 #  Layout from the log widget
 log_frame = ttk.LabelFrame(main_frame, text="Logs", padding="10 10 10 10")
-log_frame.grid(column=0, row=7, columnspan=3, sticky=(tk.W, tk.E, tk.N, tk.S), padx=5, pady=5)
+log_frame.grid(column=0, row=7, columnspan=3, sticky=(
+    tk.W, tk.E, tk.N, tk.S), padx=5, pady=5)
 
 # Create a Text widget for displaying logs
 log_text = tk.Text(log_frame, state='disabled', wrap='word', height=10)
 log_text.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
 # Add a Scrollbar for the Text widget
-log_scrollbar = ttk.Scrollbar(log_frame, orient=tk.VERTICAL, command=log_text.yview)
+log_scrollbar = ttk.Scrollbar(
+    log_frame, orient=tk.VERTICAL, command=log_text.yview)
 log_scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
 
 # Configure the Text widget to use the Scrollbar
 log_text.configure(yscrollcommand=log_scrollbar.set)
-
 # Configure logging to direct logs to the log_text widget
 configure_logging(log_text)
-
-# Clear any logs that might be already present in the log_text widget
-clear_logs(log_text)
-
 # Run the application's main event loop
 root.mainloop()

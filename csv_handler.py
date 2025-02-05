@@ -1,12 +1,29 @@
-'''
-Import necessary libraries: csv for CSV file handling,
-    re for regular expressions,
-    logging for logging messages,
-    and defaultdict from collections for default dictionary behavior.
-'''
+"""
+This module is designed to handle the processing of CSV files for a specific application,
+focusing on manipulating and formatting parcel ID data and owner information. 
+It provides functionalities for formatting a specific ID column to match a predefined format, 
+processing a CSV to group owners by parcel ID, and exporting the processed data to a new CSV file.
+
+Functions:
+    - format_id_csv_column: Formats the ID field to match the specified ID format, 
+    ensuring it aligns with the GeoJSON file requirements.
+    - process_csv: Processes the input CSV file by grouping owners by their parcel ID, 
+    handling invalid ID formats, and exporting the grouped data to a new CSV file.
+    - read_csv: Reads a CSV file and returns a dictionary mapping parcel IDs to lists of owners,
+    facilitating data manipulation and access.
+    - export_to_csv : Exports the processed data, which maps parcel IDs to lists of owners, to a specified CSV file, ensuring data persistence and accessibility.
+
+Dependencies:
+    - csv: For reading from and writing to CSV files.
+    - re: For regular expression matching, particularly in formatting ID columns.
+    - logging: For logging messages, including errors and informational messages.
+    - defaultdict from collections: For easily grouping data without initializing keys first.
+
+"""
+
 import csv
-import re
 import logging
+import re
 from typing import Dict, List
 from collections import defaultdict
 

@@ -1,10 +1,25 @@
-'''
-Import necessary libraries:
-    json for handling JSON files,
-    logging for logging messages,
-    os for operating system dependent functionality,
-    csv for CSV file operations, and time for tracking time.
-'''
+"""
+This module is designed for the processing of GeoJSON files,
+focusing on updating property data, managing data inconsistencies,
+and exporting these details efficiently. 
+It incorporates functionalities for reading and writing GeoJSON files, 
+exporting inconsistencies found during data processing to CSV files, 
+and managing file overwriting with user confirmation.
+
+Dependencies:
+    - json: For handling JSON files, particularly for reading and writing GeoJSON data.
+    - logging: For logging messages at various levels of severity (info, error, warning).
+    - os: For interacting with the operating system, especially for file path manipulations and checking file existence.
+    - csv: For operations related to CSV file handling, specifically for exporting inconsistencies.
+    - time: For tracking the duration of the processing tasks.
+
+Features and Functions:
+    - read_geojson: Reads and returns the content of a GeoJSON file specified by the input path.
+    - write_geojson: Writes the given data to a GeoJSON file at the specified output path.
+    - export_inconsistencies: Exports a dictionary of inconsistencies to a CSV file
+    - confirm_overwrite: Prompts the user for confirmation before overwriting an existing file
+    - process_geojson: Processes an input GeoJSON file by updating it with owner information from a provided dictionary
+"""
 
 import json
 import logging
